@@ -2,7 +2,7 @@
 Module
   Raptor.cpp 
 Version
-  1.0.3 20190111
+  1.0.3 20190112
 Description
   This library contains code to interface with the ME210 Sparki.
   It includes a functions to convert the line sensors into binary chars.
