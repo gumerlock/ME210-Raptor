@@ -2,7 +2,7 @@
 Module
   Raptor.cpp 
 Version
-  1.0.3 20190112
+  1.0.4 20190116
 Description
   This library contains code to interface with the ME210 Sparki.
   It includes a functions to convert the line sensors into binary chars.
@@ -20,6 +20,7 @@ When      Who  Description
                verified compatibility with PlatformIO
 01/11/19  GG   Fixed uint8_t to int8_t to solve not being able to reverse motor
                directions
+01/16/19  IS   Modified bumper function to read all five bumpers on Sparki
 ******************************************************************************/
 /*----------------------------- Include Files -------------------------------*/
 #include "Raptor.h"
@@ -229,22 +230,25 @@ void RaptorClass::Beep(uint16_t freq, uint32_t time){
     tone(BUZZER, freq, time);
 }
 
+
 /******************************************************************************
   Function:    ReadTriggers
   Contents:    This function checks the five light sensors and reports whether
                 the signal has fallen enough to trigger 1 or more
                 of the bumper sensors.
   Parameters:  int threshold - threshold to determine if a line is hit
-  Returns:     An 8 bit value where the upper 4 bits correspond to the bumper
+  Returns:     An 8 bit value where the lower 5 bits correspond to the bumper
                 sensors.  If a bumper is hit, the corresponding bit will be 0,
-                otherwise it will be 1.  The lower 4 bits always return 0.
+                otherwise it will be 1.  The upper 3 bits always return 0.
   Notes:
 ******************************************************************************/
 uint8_t RaptorClass::ReadTriggers(uint16_t threshold) {
   uint8_t trigger = 0x00;
-  trigger = trigger|((LineLeft()<threshold))|
-                    ((LineCenter()<threshold)<<2)|
-                    ((LineRight()<threshold)<<4);
+  trigger = trigger|((LineLeft()   < threshold))|
+                    ((EdgeLeft()   < threshold)<<1)|
+                    ((LineCenter() < threshold)<<2)|
+                    ((EdgeRight()  < threshold)<<3)|
+                    ((LineRight()  < threshold)<<4);
 
   return trigger;
 }
